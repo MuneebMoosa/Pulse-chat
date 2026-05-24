@@ -1,5 +1,5 @@
 import { io } from "socket.io-client";
-import { SkipForward, Camera, Mic } from "lucide-react";
+import { SkipForward, Camera, Mic , MicOff } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import VideoArea from "./VideoArea";
 import { addIceCandidate, createOffer, createPeerConnection, fetchUserMedia , handleIceCandidate , handleTrackEvent , handleOffer , handleAnswer } from "../utils/webrtc";
@@ -9,8 +9,8 @@ const ChatArea = () => {
 
   const handleSkip = () => {
     cleanupConnection();
-    
     socketRef.current.emit("next-user");
+    console.log('skipped!!!')
       
   }
 
@@ -284,7 +284,9 @@ const cleanupConnection = () => {
       
      <div className="flex gap-4 justify-center items-center">
         {/* Skip Button */}
-        <button className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:opacity-90">
+        <button className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:opacity-90"
+        onClick={handleSkip}
+        >
           <SkipForward size={20} />
           Skip
         </button>

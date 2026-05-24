@@ -153,6 +153,105 @@ io.on('connection', (socket) => {
     // remove user disconnected from user  queue
     waitingUsers = waitingUsers.filter(s => s.id !== socket.id);
   })
+  //when user skips
+  socket.on("next-user", () => {
+    console.log(socket.id, "clicked skip");
+    const partnerId = pairs[socket.id];
+
+    if (!partnerId) return;
+
+    const partnerSocket = io.sockets.sockets.get(partnerId);
+
+    delete pairs[socket.id];
+    delete pairs[partnerId];
+
+    //to clear old rooms 
+    const oldRoomId = socket.roomId;
+
+    if (oldRoomId) {
+      socket.leave(oldRoomId);
+
+      if (partnerSocket) {
+        partnerSocket.leave(oldRoomId);
+      }
+    }
+    // clear old room
+    socket.roomId = null;
+
+    if (partnerSocket) {
+      partnerSocket.roomId = null;
+    }
+
+    //this may be reusable code !!!!
+    // For the A user
+    if (waitingUsers.length > 0) {
+    const newPartner = waitingUsers.shift();
+
+    const roomId = socket.id + "-" + newPartner.id;
+
+    socket.join(roomId);
+    newPartner.join(roomId);
+
+    pairs[socket.id] = newPartner.id;
+    pairs[newPartner.id] = socket.id;
+
+    socket.roomId = roomId;
+    newPartner.roomId = roomId;
+
+    socket.emit("matched", {
+      initiator: true,
+    });
+
+    newPartner.emit("matched", {
+      initiator: false,
+    });
+
+    console.log("Re-matched:", socket.id, newPartner.id);
+
+  } else {
+    waitingUsers.push(socket);
+
+    socket.emit("waiting");
+
+    console.log("Added to queue:", socket.id);
+  }
+
+  // for the B user
+  if (partnerSocket) {
+    if (waitingUsers.length > 0) {
+      const newPartner = waitingUsers.shift();
+
+      const roomId = partnerSocket.id + "-" + newPartner.id;
+
+      partnerSocket.join(roomId);
+      newPartner.join(roomId);
+
+      pairs[partnerSocket.id] = newPartner.id;
+      pairs[newPartner.id] = partnerSocket.id;
+
+      partnerSocket.roomId = roomId;
+      newPartner.roomId = roomId;
+
+      partnerSocket.emit("matched", {
+        initiator: true,
+      });
+
+      newPartner.emit("matched", {
+        initiator: false,
+      });
+
+      console.log("Re-matched:", partnerSocket.id, newPartner.id);
+
+    } else {
+      waitingUsers.push(partnerSocket);
+
+      partnerSocket.emit("waiting");
+
+      console.log("Added to queue:", partnerSocket.id);
+    }
+  }
+
+  })
 });
 
 
