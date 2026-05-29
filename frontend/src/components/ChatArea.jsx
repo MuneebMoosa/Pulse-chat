@@ -1,6 +1,7 @@
 import { io } from "socket.io-client";
-import { SkipForward, Camera, CameraOff, Mic , MicOff } from "lucide-react";
+import { SkipForward, Camera, CameraOff, Mic , MicOff, MessageSquareText , Smile , SendHorizontal, Phone} from "lucide-react";
 import { useState, useEffect, useRef } from "react";
+import Sidepanel from "./Sidepanel";
 import VideoArea from "./VideoArea";
 import { addIceCandidate, createOffer, createPeerConnection, fetchUserMedia , handleIceCandidate , handleTrackEvent , handleOffer , handleAnswer } from "../utils/webrtc";
 const ChatArea = () => {
@@ -244,103 +245,140 @@ const cleanupConnection = () => {
   };
   
   return (
-    <div className="p-5">
-      <div className="flex justify-center w-full">
-          <p className="inline-block px-3 py-1 border rounded text-sm font-semibold">
-        🟢 {count} online
-          </p>
-      </div>
-        
-      <div>
+    
+    <div className="">
+
+      <nav className="flex justify-start w-full font-[var(--primary-font)] p-5">
+        <div className="flex items-center gap-6">
+          <h1 className="text-2xl text-[var(--secondary-color)] font-bold tracking-wide"> Pulse Chat</h1>
+          <div className="flex items-center gap-2 h-6 px-2 py-2 rounded-full text-sm font-semibold bg-[var(--ternary-color)] shadow-sm"> 
+            <span className="w-2.5 h-2.5 bg-[var(--secondary-color)] rounded-full shadow-[var(--secondary-light)]"></span> 
+            <span>{count} users online</span>
+          </div>
+        </div>
+      </nav>
+
+      <hr className="w-full border-t border-[var(--border-color)]" />
+      
+      {/* <div>
         <p className="mb-2">
           {status === "waiting" && "🔍 Searching for stranger..."}
           {status === "connected" && "💬 Connected to stranger"}
         </p>
+      </div> */}
+
+
+      <div className="flex h-[calc(100vh-88px)]"> 
+         <Sidepanel/>
+         <div className="flex flex-col flex-1 p-5 h-full">
+            <VideoArea
+              myVideoRef={myVideoRef}
+              strangerVideoRef={strangerVideoRef}
+            />
+
+            <div className="rounded-xl border border-[var(--border-color)] flex flex-1 flex-col">
+                <div className="flex gap-2 font-bold p-2 bg-[var(--secondary-bg)] border-b border-[var(--border-color)] rounded-t-xl ">
+                  <MessageSquareText color="#c0c1ff"/>
+                  <h1 className="text-xl">Live Chat</h1>
+                </div>
+                
+                {/* Messages */}
+                <div className="h-60 overflow-y-auto p-2 hide-scrollbar">
+                  {messages.map((msg, index) => (
+                    <div 
+                    key={index} 
+                    className={`p-2 mb-2  max-w-xs break-words whitespace-pre-wrap overflow-x-hidden ${
+                        msg.id === socketRef.current?.id
+                          ? "bg-[var(--secondary-color)] text-[var(--message-text)] ml-auto rounded-lg rounded-tr-none "
+                          : "bg-[var(--my-msg)] rounded-lg rounded-tl-none"
+                      }`}
+                      >
+                      {msg.text}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Input */}
+                <div className="p-3 bg-[var(--secondary-bg)]  border-t rounded-b-xl  border-[var(--border-color)]">
+                  <form 
+                    onSubmit={(e) => {
+                        e.preventDefault(); 
+                        handleSend()
+                      }}
+                      className="flex gap-2 w-full ">
+                    <button type="button" className="px-3 border-none rounded-lg ">
+                      <Smile size={20} />
+                    </button>
+                    <input
+                    type="text"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    className="border px-2 py-1 flex-1 rounded-lg outline-none bg-[var(--ternary-color)] border-[var(--border-color)]"
+                    placeholder="Type message..."
+                  />
+
+                  <button
+                    type="submit"
+                    className="bg-[var(--btn-color)] text-white px-3 rounded-lg"
+                  >
+                    <SendHorizontal color="#1f1f27"/>
+                  </button>
+                  </form>
+                </div>
+            </div>
+            <div className="flex gap-4 justify-center items-center mt-3 bg-[var(--my-msg)] p-4">
+                {/* Skip Button */}
+                <button className="flex flex-col items-center justify-center gap-1 px-2 py-2 bg-[var(--btn-color)] text-[var(--secondary-bg)] rounded-xl  w-25 h-15 cursor-pointer"
+                onClick={handleSkip}
+                >
+                  <SkipForward size={20} />
+                  <span className="text-xs font-medium">
+                    Skip
+                  </span>
+                </button>
+
+                {/* Camera Button */}
+                <button className="flex flex-col items-center justify-center gap-1 px-2 py-2 text-white rounded-xl  w-25 h-15 cursor-pointer"
+                onClick={handleCameraToggle}>
+                  {cameraOn ? (
+                      <Camera size={20} />
+                    ) : (
+                      <CameraOff size={20} />
+                    )
+                  }
+                  <span className="text-xs font-medium">
+                    Camera
+                  </span>
+                </button>
+
+                {/* Mic Button */}
+                <button className="flex flex-col items-center justify-center gap-1 px-2 py-2 text-white rounded-xl  w-25 h-15 cursor-pointer"
+                onClick={handleMicToggle}>
+                  {micOn ? (
+                      <Mic size={20} />
+                    ) : (
+                      <MicOff size={20} />
+                    )
+                  }
+                  <span className="text-xs font-medium">
+                    Mic
+                  </span>
+                </button>
+                {/* disconnect */}
+                <button className="flex flex-col items-center justify-center gap-1 px-2 py-2 bg-[#690005] text-white rounded-xl  w-25 h-15 cursor-pointer">
+                  <Phone size={20}/>
+                  <span className="text-xs font-medium">
+                    End
+                  </span>
+                </button>
+            </div>
+
+
+
+
+
+         </div> 
       </div>
-
-      {/* VideoArea start*/}
-         <VideoArea
-           myVideoRef={myVideoRef}
-           strangerVideoRef={strangerVideoRef}
-         />
-      {/* VideoArea ends*/}
-      
-      <h1 className="text-xl mb-4">Chat Here</h1>
-      {/* Messages */}
-      <div className="border h-60 overflow-y-auto p-2 mb-4">
-        {messages.map((msg, index) => (
-          <div 
-          key={index} 
-          className={`p-2 mb-2 rounded max-w-xs ${
-              msg.id === socketRef.current?.id
-                ? "bg-blue-500 text-white ml-auto"
-                : "bg-gray-300 text-black"
-            }`}
-            >
-            {msg.text}
-          </div>
-        ))}
-      </div>
-
-      {/* Input */}
-      <div className="flex gap-3 justify-center w-full">
-        <form 
-           onSubmit={(e) => {
-              e.preventDefault(); 
-              handleSend()
-            }}
-            className="flex gap-2 w-full max-w-lg">
-           <input
-          type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          className="border px-2 py-1 flex-1"
-          placeholder="Type message..."
-        />
-
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-3"
-        >
-          Send
-        </button>
-        </form>
-      </div>
-      
-     <div className="flex gap-4 justify-center items-center">
-        {/* Skip Button */}
-        <button className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:opacity-90"
-        onClick={handleSkip}
-        >
-          <SkipForward size={20} />
-          Skip
-        </button>
-
-        {/* Camera Button */}
-        <button className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:opacity-90"
-         onClick={handleCameraToggle}>
-          {cameraOn ? (
-              <Camera size={20} />
-            ) : (
-              <CameraOff size={20} />
-            )
-          }
-          Camera
-        </button>
-
-        {/* Mic Button */}
-        <button className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:opacity-90"
-        onClick={handleMicToggle}>
-          {micOn ? (
-              <Mic size={20} />
-            ) : (
-              <MicOff size={20} />
-            )
-          }
-          Mic
-        </button>
-    </div>
-
     </div>
   )
 }

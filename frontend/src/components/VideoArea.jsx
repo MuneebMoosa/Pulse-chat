@@ -4,10 +4,10 @@
     return (
       <div>
       {/* videochatarea start  */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[50vh] mb-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[40vh] mb-5">
 
         {/* Your Video */}
-        <div className="relative bg-black rounded-xl overflow-hidden border">
+        <div className="relative bg-black rounded-xl overflow-hidden">
           <video
             autoPlay
             muted
@@ -22,7 +22,7 @@
         </div>
 
         {/* Stranger Video */}
-          <div className="relative bg-black rounded-xl overflow-hidden border">
+          <div className="relative bg-black rounded-xl overflow-hidden">
             <video
               autoPlay
               playsInline
