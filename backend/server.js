@@ -11,7 +11,7 @@ const io = new Server( server,{
   cors: {
     origin: [
         "http://localhost:4173",
-        "https://pulse-chat-kappa.vercel.app/"
+        "https://pulse-chat-kappa.vercel.app"
       ],
       methods: ["GET", "POST"],
     }
