@@ -4,7 +4,9 @@ import { useState, useEffect, useRef } from "react";
 import Sidepanel from "./Sidepanel";
 import VideoArea from "./VideoArea";
 import { addIceCandidate, createOffer, createPeerConnection, fetchUserMedia , handleIceCandidate , handleTrackEvent , handleOffer , handleAnswer } from "../utils/webrtc";
+import { useNavigate } from "react-router-dom";
 const ChatArea = () => {
+  const navigate = useNavigate();
   //camera mic on and off start
   const [cameraOn, setCameraOn] = useState(true);
   const [micOn, setMicOn] = useState(true);
@@ -30,14 +32,16 @@ const ChatArea = () => {
   }
   //camera mic on and off end
 
-  // const handleDisconnect = () => {
-  //   cleanupConnection();
+  const handleDisconnect = () => {
+    cleanupConnection();
+    console.log("end btn clicked")
+    setMessages([]);
+    setStatus("waiting");
 
-  //   setMessages([]);
-  //   setStatus("waiting");
+    socketRef.current.disconnect();
 
-  //   socketRef.current.disconnect();
-  // }
+    navigate("/");
+  }
   const socketRef = useRef(null);
   const statusRef = useRef("connecting");
 
@@ -370,7 +374,7 @@ const cleanupConnection = () => {
                 </button>
                 {/* disconnect */}
                 <button className="flex flex-col items-center justify-center gap-1 px-2 py-2 bg-[#690005] text-white rounded-xl  w-25 h-15 cursor-pointer"
-                  // onClick={handleDisconnect}
+                  onClick={handleDisconnect}
                 >
                   <Phone size={20}/>
                   <span className="text-xs font-medium">

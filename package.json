@@ -14,5 +14,8 @@
   "type": "module",
   "devDependencies": {
     "concurrently": "^9.2.1"
+  },
+  "dependencies": {
+    "react-router-dom": "^7.16.0"
   }
 }
