@@ -1,24 +1,27 @@
 let peerConfiguration = {
-    iceServers:[
-        {
-            urls:[
-              'stun:stun.l.google.com:19302',
-              'stun:stun1.l.google.com:19302'
-            ]
-        },
-         {
-          urls: [
-            "turn:openrelay.metered.ca:80",
-            "turn:openrelay.metered.ca:443",
-            "turn:openrelay.metered.ca:443?transport=tcp",
-          ],
-          username: "openrelayproject",
-          credential: "openrelayproject",
-        },
-    ]
-}
+  iceServers: [
+    {
+      urls: [
+        "stun:stun.relay.metered.ca:80",
+      ],
+    },
 
+    {
+      urls: [
+        "turn:global.relay.metered.ca:80",
+        "turn:global.relay.metered.ca:80?transport=tcp",
+        "turn:global.relay.metered.ca:443",
+        "turns:global.relay.metered.ca:443?transport=tcp",
+      ],
+      username:
+        "f8dbf68380ac57b8a2814bfc",
+      credential:
+        "syFrqAE3NFOle23r",
+    },
+  ],
 
+  iceCandidatePoolSize: 10,
+};
 export const fetchUserMedia = async() => {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
