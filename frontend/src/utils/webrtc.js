@@ -1,23 +1,24 @@
 let peerConfiguration = {
-    iceServers:[
-        {
-            urls:[
-              'stun:stun.l.google.com:19302',
-              'stun:stun1.l.google.com:19302'
-            ]
-        },
-         {
-          urls: [
-            "turn:openrelay.metered.ca:80",
-            "turn:openrelay.metered.ca:443",
-            "turn:openrelay.metered.ca:443?transport=tcp",
-          ],
-          username: "openrelayproject",
-          credential: "openrelayproject",
-        },
-    ]
-}
+  iceServers: [
+    {
+      urls: [
+        "stun:stun.l.google.com:19302",
+        "stun:stun1.l.google.com:19302",
+      ],
+    },
+    {
+      urls: [
+        "turn:openrelay.metered.ca:80",
+        "turn:openrelay.metered.ca:443",
+        "turn:openrelay.metered.ca:443?transport=tcp",
+      ],
+      username: "openrelayproject",
+      credential: "openrelayproject",
+    },
+  ],
 
+  iceCandidatePoolSize: 10,
+};
 
 export const fetchUserMedia = async() => {
   try {
@@ -36,6 +37,19 @@ export const fetchUserMedia = async() => {
 
 export const createPeerConnection = () =>{
   const peerConnection = new RTCPeerConnection(peerConfiguration);
+  peerConnection.oniceconnectionstatechange = () => {
+    console.log(
+      "ICE State:",
+      peerConnection.iceConnectionState
+    );
+  };
+
+  peerConnection.onconnectionstatechange = () => {
+    console.log(
+      "Peer State:",
+      peerConnection.connectionState
+    );
+  };
   return peerConnection;
 }
 
@@ -60,6 +74,7 @@ export const handleAnswer = async (peerConnection , answer) => {
 export const handleIceCandidate = (peerConnection , socket) => {
    peerConnection.onicecandidate = (event) => {
     if(event.candidate){
+      console.log("candidate sent:", event.candidate.candidate );
       socket.emit("ice-candidate", event.candidate);
       
       console.log("ice candidate sent");
@@ -72,6 +87,8 @@ export const addIceCandidate = async (peerConnection , candidate) => {
        console.log( "Peer connection missing" );
       return;
     }
+    console.log("candidate received");
+
     await peerConnection.addIceCandidate(candidate);
 
 }
